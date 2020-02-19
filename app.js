@@ -1,13 +1,37 @@
 const express = require('express');
+// const request = require('superagent');
+const geoData = require('./data/geo.json');
 
 const app = express();
 
-app.get('/location', (req, res) =>{
+
+
+// app.get grabs the url? and returns something
+app.get('/', (req, res) => {
     res.json({
-        some: 'json'
-    })
-})
+        message: 'hello! :D'
+    });   
+});
 
 
 
-app.listen(3000, () => { console.log('running....')});
+app.get('/location', (req, respond) => {
+    const cityData = geoData.results[0];
+
+    respond.json({
+        formatted_query: cityData.formatted_address,
+        latitude: cityData.geometry.location.lat,
+        longitude: cityData.geometry.location.lng,
+    });
+});
+
+
+
+app.get('*', (req, res) => res.send('404 Message Yo'));
+
+
+
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => { console.log('Were listening on port', port);
+});
