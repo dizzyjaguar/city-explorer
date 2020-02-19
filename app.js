@@ -1,8 +1,10 @@
 const express = require('express');
 // const request = require('superagent');
 const geoData = require('./data/geo.json');
-
+const weatherData = require ('./data/darksky.json');
 const app = express();
+
+app.use(cors());
 
 
 
@@ -24,6 +26,10 @@ app.get('/location', (req, respond) => {
         longitude: cityData.geometry.location.lng,
     });
 });
+
+app.get('/weather', (req, res) => {
+    const weatherData = weatherData.
+})
 
 
 
