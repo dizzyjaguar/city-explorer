@@ -1,5 +1,5 @@
 const express = require('express');
-const request = require('superagent');
+// const request = require('superagent');
 const geoData = require('./data/geo.json');
 
 const app = express();
@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
 
 
 app.get('/location', (req, respond) => {
-    const cityData = geoData.results[0]
+    const cityData = geoData.results[0];
 
     respond.json({
         formatted_query: cityData.formatted_address,
@@ -25,7 +25,9 @@ app.get('/location', (req, respond) => {
     });
 });
 
-app.get('*', (req, res) => res.send('404 Message Yo'))
+
+
+app.get('*', (req, res) => res.send('404 Message Yo'));
 
 
 
