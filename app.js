@@ -1,8 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const request = require('superagent');
-
-const weather = require ('./data/darksky.js');
 const cors = require('cors');
 const app = express();
 // need to use cors for some funny reason
@@ -49,8 +47,10 @@ app.get('/location', async(req, res, next) => {
 });
 
 
-const getWeatherData = (lat, lng) => {
-    return weather.daily.data.map(forecast => {
+const getWeatherData = async(lat, lng) => {
+    const weather = await request.get(`https://api.darksky.net/forecast/${process.env.DARKSKY_API_KEY}/${lat},${lng}`);
+
+    return weather.body.daily.data.map(forecast => {
         return {
             forecast: forecast.summary,
             time: new Date(forecast.time * 1000)
@@ -59,8 +59,9 @@ const getWeatherData = (lat, lng) => {
 };
 
 
-app.get('/weather', (req, res) => {
-    const weatherData = getWeatherData(lat, lng);
+app.get('/weather', async(req, res) => {
+    const weatherData = await getWeatherData(lat, lng);
+
 
     res.json(weatherData);
 });
