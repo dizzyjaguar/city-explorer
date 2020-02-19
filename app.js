@@ -24,7 +24,7 @@ let lng;
 
 app.get('/location', (req, respond) => {
     // in www.some-api.com?search=humboldt, 'location will be what 'search' declares.... aka 'humboldt because ?search=humboldt
-    const location = request.query.search;
+    // const location = request.query.search;
 
     const cityData = geoData.results[0];
 
