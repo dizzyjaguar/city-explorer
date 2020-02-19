@@ -1,7 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const request = require('superagent');
-const geoData = require('./data/geo.json');
-const weatherData = require ('./data/darksky.json');
+
+const weather = require ('./data/darksky.js');
 const cors = require('cors');
 const app = express();
 // need to use cors for some funny reason
@@ -22,26 +23,34 @@ let lng;
 
 
 
-app.get('/location', (req, respond) => {
+app.get('/location', async(req, res, next) => {
+    try {        
     // in www.some-api.com?search=humboldt, 'location will be what 'search' declares.... aka 'humboldt because ?search=humboldt
-    // const location = request.query.search;
+        const location = req.query.search;
 
-    const cityData = geoData.results[0];
+        const URL = `https://us1.locationiq.com/v1/search.php?key=${process.env.GEOCODE_API_KEY}&q=${location}&format=json`;
+
+        const cityData = await request.get(URL);
+
+        const firstResult = cityData.body[0];
 
     //update the global lat and lng state so that we can use this updated data state into our weather api function, since both weather api needs lat and lng to get the weather and we want to pass the lat and lng from the location api we update a global state
-    lat = cityData.geometry.location.lat;
-    lng = cityData.geometry.location.lng;
+        lat = firstResult.lat;
+        lng = firstResult.lon;
 
-    respond.json({
-        formatted_query: cityData.formatted_address,
-        latitude: lat,
-        longitude: lng,
-    });
+        res.json({
+            formatted_query: firstResult.display_name,
+            latitude: lat,
+            longitude: lng,
+        });
+    } catch (err) {
+        next(err);
+    }   
 });
 
 
 const getWeatherData = (lat, lng) => {
-    return weatherData.daily.map(forecast => {
+    return weather.daily.data.map(forecast => {
         return {
             forecast: forecast.summary,
             time: new Date(forecast.time * 1000)
