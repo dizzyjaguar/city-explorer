@@ -1,6 +1,7 @@
 const express = require('express');
 // const request = require('superagent');
 const geoData = require('./data/geo.json');
+const weatherData = require ('./data/darksky.json');
 
 const app = express();
 
