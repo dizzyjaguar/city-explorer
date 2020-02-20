@@ -20,3 +20,28 @@ describe('/GET /', () => {
         });
     
 });
+
+
+
+describe('/GET /location', () => {
+    test('should respond with formatted query, latitue, and longitude', 
+    
+        async(done) => {
+
+            const response = await request(app)
+                .get('/location');
+            
+            expect(response.body).toEqual({
+                formatted_query: expect.any(String),
+                latitude: expect.any(String),
+                longitude: expect.any(String)
+            });
+
+            expect(response.statusCode).toBe(200);
+
+            done();
+        
+        });
+    
+});
+
