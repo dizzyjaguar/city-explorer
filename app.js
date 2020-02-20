@@ -115,9 +115,6 @@ const getEventData = async(lat, lng) => {
             summary: event.description
         };
     });
-    
-    
-
 };
 
 app.get('/events', async(req, res, next) => {
@@ -128,7 +125,47 @@ app.get('/events', async(req, res, next) => {
     } catch (err) {
         next(err);
     }
+});
+
+
+const getTrailData = async(lat, lng) => {
+
+    const trailData = await request.get(`https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lng}&maxDistance=10&key=${process.env.TRAIL_API_KEY}`);
+
+    // console.log(trailData.body)
+
+    return trailData.body.trails.map(trail => {
+        return {
+            name: trail.name,
+            location: trail.location,
+            length: trail.length,
+            stars: trail.stars,
+            votes: trail.starVotes,
+            summary: trail.summary,
+            url: trail.url,
+            conditions: trail.conditionStatus,
+            condition_date: trail.conditionDate
+
+            
+        };
+    });
+
+
+};
+
+app.get('/trails', async(req, res, next) => {
+    try {
+        const trailList = await getTrailData(lat, lng)
+
+        res.json(trailList);
+    } catch (err) {
+        next(err);
+    }
 })
+
+
+
+
 
 
 
