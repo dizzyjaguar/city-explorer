@@ -175,7 +175,8 @@ app.get('*', (req, res) => res.send('404 Message Yo'));
 
 // location?search=portland for changing location
 
-const port = process.env.PORT || 3000;
 
-app.listen(port, () => { console.log('Were listening on port', port);
-});
+
+module.exports = {
+    app: app,
+};
