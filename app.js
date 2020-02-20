@@ -18,13 +18,14 @@ app.get('/', (req, res) => {
 // and use the new updated state onto the next function
 let lat;
 let lng;
+let location;
 
 
-
+//LOCATION API
 app.get('/location', async(req, res, next) => {
     try {        
     // in www.some-api.com?search=humboldt, 'location will be what 'search' declares.... aka 'humboldt because ?search=humboldt
-        const location = req.query.search;
+        location = req.query.search;
 
         const URL = `https://us1.locationiq.com/v1/search.php?key=${process.env.GEOCODE_API_KEY}&q=${location}&format=json`;
 
@@ -46,7 +47,7 @@ app.get('/location', async(req, res, next) => {
     }   
 });
 
-
+//WEATHER API
 const getWeatherData = async(lat, lng) => {
     const weather = await request.get(`https://api.darksky.net/forecast/${process.env.DARKSKY_API_KEY}/${lat},${lng}`);
 
@@ -66,11 +67,28 @@ app.get('/weather', async(req, res) => {
     res.json(weatherData);
 });
 
+// YELP API
+
+app.get('/yelp', async(req, res, next) => {
+    try {
+        const yelpData = await request
+            .get(`https://api.yelp.com/v3/businesses/search?location=${location}`)
+            .set('Authorization', `Bearer ${process.env.YELP_API_KEY}`);
+
+        res.json(yelpData.body);
+
+
+    } catch (err) {
+        next(err);
+    }
+});
+
+
 
 
 app.get('*', (req, res) => res.send('404 Message Yo'));
 
-
+// location?search=portland for changing location
 
 const port = process.env.PORT || 3000;
 
