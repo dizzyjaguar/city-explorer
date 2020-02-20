@@ -75,6 +75,9 @@ const getYelpData = async(location) => {
         .get(`https://api.yelp.com/v3/businesses/search?location=${location}`)
         .set('Authorization', `Bearer ${process.env.YELP_API_KEY}`);
     
+        //dont forget to console log when your data isnt working!!!!
+    // console.log(yelpData.body)
+
     return yelpData.body.businesses.map(business => {
         return {
             name: business.name,
@@ -83,19 +86,50 @@ const getYelpData = async(location) => {
     });
 };
 
-
 app.get('/yelp', async(req, res, next) => {
     try {
-
+        // we need to make sure to await the function call otherwize we will  
+        // get a blank object because didnt wait for the actual data we wanted
         const businessList = await getYelpData(location);
 
         res.json(businessList);
-
 
     } catch (err) {
         next(err);
     }
 });
+
+// EVENTFUL API
+
+const getEventData = async(lat, lng) => {
+
+    const eventData = await request.get(`http://api.eventful.com/json/events/search?app_key=${process.env.EVENTFUL_API_KEY}&where=${lat},${lng}&within=25`);
+
+    const body = await JSON.parse(eventData.text);
+    console.log(body.events.event);
+    return body.events.event.map(event => {
+        return {
+            link: event.url,
+            name: event.title,
+            date: event.start_time,
+            summary: event.description
+        };
+    });
+    
+    
+
+};
+
+app.get('/events', async(req, res, next) => {
+    try {
+        const eventList = await getEventData(location);
+
+        res.json(eventList);
+    } catch (err) {
+        next(err);
+    }
+})
+
 
 
 
