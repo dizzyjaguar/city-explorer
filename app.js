@@ -69,13 +69,27 @@ app.get('/weather', async(req, res) => {
 
 // YELP API
 
+const getYelpData = async(location) => {
+    
+    const yelpData = await request
+        .get(`https://api.yelp.com/v3/businesses/search?location=${location}`)
+        .set('Authorization', `Bearer ${process.env.YELP_API_KEY}`);
+    
+    return yelpData.body.businesses.map(business => {
+        return {
+            name: business.name,
+            rating: business.rating
+        };
+    });
+};
+
+
 app.get('/yelp', async(req, res, next) => {
     try {
-        const yelpData = await request
-            .get(`https://api.yelp.com/v3/businesses/search?location=${location}`)
-            .set('Authorization', `Bearer ${process.env.YELP_API_KEY}`);
 
-        res.json(yelpData.body);
+        const businessList = await getYelpData(location);
+
+        res.json(businessList);
 
 
     } catch (err) {
